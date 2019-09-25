@@ -1,0 +1,13 @@
+---
+# tasks file for zabbix
+- include: update_system.yml
+- include: chrony.yml
+- include: disable_selinux.yml
+- include: firewall.yml
+- include: mariadb.yml
+- include: nginx.yml
+- include: php.yml
+- include: zabbix.yml
+- include: zabbix_db.yml
+- include: zabbix_service.yml
+

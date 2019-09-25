@@ -1,0 +1,81 @@
+---
+  - name: Install MariaDB on remote nodes
+    hosts: centos
+    become: yes
+
+    vars:
+      source_file:       /etc/ansible/fix_nginx_pid.sh
+      destin_file:       /tmp
+      source_web:        /etc/ansible/websrv/index.html
+      destin_web:        /usr/share/nginx/html
+      destin_web_debian: /var/www/html
+
+    tasks:
+    - name: Install MariaDB via yum
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      vars:
+        packages:
+        - mariadb
+        - mariadb-server
+        - mariadb-devel
+        - MySQL-python
+
+    - name: Enable and start MariaDB
+      systemd:
+        name: mariadb
+        enabled: yes
+        state: restarted
+
+    - name: Reread configs
+      systemd:
+        daemon_reload: yes
+
+
+    - name: Change root password for MySQL
+      mysql_user:
+        login_user: root
+        login_password: 2412Kamran
+        name: root
+        password: 2412Kamran
+        priv: '*.*:ALL'
+        state: present
+      register: result
+
+    - debug:
+        var: result
+
+    - name: Removes all anonymous user accounts
+      mysql_user:
+        login_user: root
+        login_password: 2412Kamran
+        name: ''
+        host_all: yes
+        state: absent
+      register: result1
+
+    - debug:
+        var: result1
+
+#    - debug:
+#        var: result1
+#
+#    - name: Change root password for MySQL
+#      mysql_user:
+#        name: root
+#        password: 2412Kamran
+#        priv: '*.*:ALL'
+#        state: present
+#      ignore_errors: yes
+#      register: result1
+#      when: result1.rc == 0    
+  
+    - include: 3_install_nginx_linux.yml
+
+    handlers:
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+

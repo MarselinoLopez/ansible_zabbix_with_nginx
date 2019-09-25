@@ -1,0 +1,30 @@
+---
+- name: Add 80 port to firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+
+- name: Add 443 port to firewall
+  firewalld:
+    service: https
+    permanent: yes
+    state: enabled
+
+- name: Add 10050-10051/udp to firewall
+  firewalld:
+    port: 10050-10051/udp
+    permanent: yes
+    state: enabled
+
+- name: Add 10050-10051/tcp to firewall
+  firewalld:
+    port: 10050-10051/tcp
+    permanent: yes
+    state: enabled
+
+- name: Reload Firewall rules
+  systemd:
+    service: firewalld
+    state: restarted
+

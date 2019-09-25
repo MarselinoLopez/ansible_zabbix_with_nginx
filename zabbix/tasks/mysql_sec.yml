@@ -1,0 +1,36 @@
+---
+- name: Change empty root password for MySQL
+  mysql_user:
+    login_user: root
+    login_password: ''
+    name: root
+    password: "{{ mysql_root_password }}"
+    priv: '*.*:ALL'
+    state: present
+  register: result
+# when: result.failed == false
+  ignore_errors: yes
+
+#- debug:
+#    var: result
+
+- name: Removes all anonymous user accounts
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: ''
+    host_all: yes
+    state: absent
+# register: result1
+  ignore_errors: yes
+  when: result.failed == false
+
+- name: Remove MySql test database
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: test
+    state: absent
+  ignore_errors: yes
+  when: result.failed == false
+

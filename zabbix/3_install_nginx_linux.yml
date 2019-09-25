@@ -1,0 +1,46 @@
+  - block:
+  
+    - name: Install nginx via yum
+      yum:
+        name: nginx
+        state: latest
+
+    - name: Copy script for fix PID error in Nginx
+      copy:
+        src:  "{{ source_file }}"
+        dest: "{{ destin_file }}"
+        mode: 0755
+
+    - name: Apply script for fix PID error in Nginx
+      shell: /tmp/./fix_nginx_pid.sh
+
+    - name: Copy start page to RedHat-like web server
+      copy:
+        src:  "{{ source_web }}"
+        dest: "{{ destin_web }}"
+      notify: Restart Nginx
+  
+    when: ansible_os_family == "RedHat"
+
+  - block:
+
+    - name: Install nginx via aptitude
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Enable nginx service
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Copy start page to Debian-like web server
+      copy:
+        src:  "{{ source_web }}"
+        dest: "{{ destin_web_debian }}"
+      notify: Restart Nginx
+      
+    when: ansible_os_family == "Debian"
+
+

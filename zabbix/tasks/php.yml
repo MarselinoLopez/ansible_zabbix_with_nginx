@@ -1,0 +1,50 @@
+---
+- name: Install PHP
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - php
+    - php-fpm
+    - php-mysql
+    - php-pear
+    - php-cgi
+    - php-common
+    - php-ldap
+    - php-mbstring
+    - php-snmp
+    - php-gd
+    - php-xml
+    - php-gettext
+    - php-bcmath
+
+- name: Copy to nodes prepared php.ini file
+  copy:
+    src:  "php.ini"
+    dest: "{{ php_ini_file }}"
+    backup: yes
+
+- name: Enable and start php-fpm
+  systemd:
+    name: php-fpm
+    enabled: yes
+    state: restarted
+
+- name: Reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Copy to nodes prepared default.conf file
+  copy:
+    src:  "default.conf"
+    dest: "{{ default_conf }}"
+    backup: yes
+
+- name: Copy to nodes prepared index.php file
+  copy:
+    src:  "index.php"
+    dest: "{{ php_test_page }}"
+    backup: yes
+  notify: Restart Nginx
+

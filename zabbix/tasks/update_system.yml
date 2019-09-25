@@ -1,0 +1,45 @@
+---    
+- name: Set timezone
+  shell: cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+  when: ansible_date_time.tz != "MSK"
+
+- name: Update systems up to date via yum
+  yum:
+    name: '*'
+    state: latest
+  register: update_yum
+
+- name: Add EPEL repository
+  yum:
+    name: epel-release
+    state: present
+
+- name: Add NGINX repository
+  yum_repository:
+    name: nginx
+    description: nginx repo
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: no
+    enabled: yes
+
+- name: Add Zabbix repo from remote rpm
+  yum:
+    name: https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-2.el7.noarch.rpm
+    state: present
+    disable_gpg_check: yes
+
+- name: Reboot system's after update
+  shell: sleep 3 && reboot now
+  async: 1
+  poll: 0
+  when: (update_yum.changed != false)
+
+- name: Wait when my servers is come back after reboot
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    state: started
+    delay: 5
+    timeout: 120
+  delegate_to: 127.0.0.1
+  when: (update_yum.changed != false)
+

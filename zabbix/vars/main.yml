@@ -1,0 +1,14 @@
+---
+# vars file for zabbix
+      source_file:          fix_nginx_pid.sh
+      destin_file:          /tmp
+      destin_web:           /usr/share/nginx/html
+      destin_web_debian:    /var/www/html
+      mysql_root_password:  2412Kamran
+      php_ini_file:         /etc
+      default_conf:         /etc/nginx/conf.d/
+      php_test_page:        /usr/share/nginx/html
+      zabbix_username:      zabbix
+      zabbix_db_password:   zabbixpwd
+      dest_zabbix_conf:     /etc/zabbix
+      dest_zabbix_conf_php: /etc/zabbix/web/

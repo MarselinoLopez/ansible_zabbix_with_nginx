@@ -1,0 +1,21 @@
+---
+- name: Install nginx via yum
+  yum:
+    name: nginx
+    state: latest
+
+- name: Copy script for fix PID error in Nginx
+  copy:
+    src:  "{{ source_file }}"
+    dest: "{{ destin_file }}"
+    mode: 0755
+
+- name: Apply script for fix PID error in Nginx
+  shell: /tmp/./fix_nginx_pid.sh
+
+- name: Copy start page to RedHat-like web server from template
+  template:
+    src:  "index.j2"
+    dest: "{{ destin_web }}/index.html"
+  notify: Restart Nginx
+

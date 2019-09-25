@@ -1,0 +1,13 @@
+---
+- name: Install chrony via yum
+  yum:
+    name: chrony
+    state: latest
+
+- name: Enable service chrony
+  systemd:
+    name: chronyd.service
+    state: restarted
+    enabled: yes
+ 
+

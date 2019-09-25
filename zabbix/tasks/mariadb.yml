@@ -1,0 +1,40 @@
+---
+- name: Install MariaDB via yum
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - mariadb
+    - mariadb-server
+    - mariadb-devel
+    - MySQL-python
+
+- name: Enable and start MariaDB
+  systemd:
+    name: mariadb
+    enabled: yes
+    state: restarted
+
+- name: Reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Create zabbix database
+  mysql_db:
+    login_user: root
+    login_password: ''
+    name: zabbix
+    state: present
+    encoding: utf8
+    collation: utf8_general_ci
+
+- name: Create zabbix user in MySql
+  mysql_user:
+    name: "{{ zabbix_username }}"
+    password: "{{ zabbix_db_password }}"
+    priv: 'zabbix.*:ALL,GRANT'
+    state: present
+    login_user: root
+    login_password: ''
+

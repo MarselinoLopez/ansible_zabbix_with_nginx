@@ -1,0 +1,32 @@
+---
+- name: Check folder for create.sql
+  shell: cd /usr/share/doc/zabbix-server-mysql-* && ls | grep create.sql
+  register: db
+
+- name: Install extract zabbix DB schema
+  shell: cd /usr/share/doc/zabbix-server-mysql-* && gunzip create.sql.gz
+  ignore_errors: yes
+  when: db.stdout != "create.sql.old"  
+  register: create_sql
+
+- debug:
+    var: db.stdout
+
+- name: Check tables
+  shell: mysql -uroot -e 'show tables' zabbix && echo done
+  register: app 
+  ignore_errors: yes
+
+- name: Apply schema to DB
+  shell: mysql -v -u root zabbix < /usr/share/doc/zabbix-server-mysql-4.2.6/create.sql
+#  register: app
+  ignore_errors: yes  
+  when: db.stdout != "create.sql.old"
+
+- name: Rename create.sql
+  shell: cd /usr/share/doc/zabbix-server-mysql-*/ && mv create.sql create.sql.old
+  when: db.stdout != "create.sql.old"
+
+#- debug:
+#    var: create_sql  
+

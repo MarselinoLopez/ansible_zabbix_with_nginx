@@ -1,0 +1,38 @@
+---
+- name: Copy zabbix_server.conf template to remote node
+  template:
+    src: zabbix_server.j2
+    dest: "{{ dest_zabbix_conf }}/zabbix_server.conf"
+    mode: 0644
+#    owner: root
+
+- name: Enable and start Zabbix-server
+  systemd:
+    name: zabbix-server
+    enabled: yes
+    state: restarted
+
+
+- name: Enable and start Zabbix-agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+    state: restarted
+
+- name: Copy modified default.conf to nodes
+  copy:
+    src:  "default_zabbix.conf"
+    dest: "{{ default_conf }}/default.conf"
+    backup: yes
+  notify: Restart Nginx
+
+- name: Copy modified zabbix.conf.php to nodes
+  copy:
+    src:  "zabbix.conf.php"
+    dest: "{{ dest_zabbix_conf_php }}/zabbix.conf.php"
+    backup: yes
+    mode: 0644
+    owner: apache
+    group: apache
+  notify: Restart Nginx
+
