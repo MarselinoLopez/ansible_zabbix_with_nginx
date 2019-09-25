@@ -1,0 +1,9 @@
+---
+  - name: Install nginx via roles
+    hosts: centos
+    become: yes
+
+    roles:
+      - { role: zabbix, when: ansible_os_family == 'RedHat' }
+#      - role: zabbix/zabbix
+
