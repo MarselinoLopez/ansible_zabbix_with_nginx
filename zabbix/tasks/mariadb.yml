@@ -10,6 +10,15 @@
     - mariadb-devel
     - MySQL-python
 
+- name: Copy prepared my.cnf file to remote server
+  copy:
+    src: my.cnf
+    dest: "{{ dest_my_cnf }}"
+    backup: yes
+    mode: 0644
+    group: root
+    owner: root
+
 - name: Enable and start MariaDB
   systemd:
     name: mariadb
