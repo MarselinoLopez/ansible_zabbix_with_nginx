@@ -18,4 +18,11 @@
     src:  "index.j2"
     dest: "{{ destin_web }}/index.html"
   notify: Restart Nginx
+  
+- name: Enable and start nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: restarted
+
 
